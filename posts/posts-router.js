@@ -19,16 +19,18 @@ router.get('/', (req, res) => {
 // ADD A POST
 router.post('/', (req, res) => {
     const postInfo = req.body;
-    !postInfo.title || !postInfo.contents
+    const user_id = user.req.params.id;
+
+    !postInfo.text || !postInfo.user_id
     ? res
-        .status(400).json({ errorMessage: "Please provide title and contents for the post." })
+        .status(400).json({ errorMessage: "Please provide contents for the post." })
     : db
-        .insert(postInfo)
+        .insert(user_id, postInfo)
         .then( post => {
             res.status(201).json(post);
     })
         .catch( err => {
-            res.status(500).json({ error: "There was an error while saving the post to the database" })
+            res.status(500).json({ error: "There was an error while saving the post to the database." })
     })
 })
 
@@ -62,7 +64,7 @@ router.delete('/:id', (req, res) => {
         
     })
     .catch(err => {
-        res.status(500).json({ error: "The post could not be removed" })
+        res.status(500).json({ error: "The post could not be removed." })
     })
 })
 
@@ -71,19 +73,19 @@ router.put('/:id', (req, res) => {
     const id = req.params.id;
     const changes = req.body;
 
-    !changes.title || !changes.contents 
+    !changes.text 
     ? res 
-        .status(400).json({ errorMessage: "Please provide title and contents for the post." })
+        .status(400).json({ errorMessage: "Please provide contents for the post." })
     : db
         .update(id, changes)
         .then(id => {
             if(id === 0){
-                res.status(404).json({ message: "The user with the specified ID does not exist." }) 
+                res.status(404).json({ message: "The post with the specified ID does not exist." }) 
             }
             db
                 .getById(id)
                 .then(post => {
-                    res.status(200).json(post)
+                    res.status(200).json(changes)
                 })
         })
         .catch(err => {
