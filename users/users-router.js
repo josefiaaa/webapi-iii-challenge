@@ -87,7 +87,7 @@ router.delete('/:id', (req, res) => {
 })
 
 // EDIT A USER
-router.put('/:id', (req, res) => {
+router.put('/:id', drunkWithPower, (req, res) => {
     const id = req.params.id;
     const changes = req.body;
 
