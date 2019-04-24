@@ -4,6 +4,16 @@ const db = require('../data/helpers/userDb');
 
 const router = express.Router();
 
+function drunkWithPower(req, res, next) {
+    let name = req.body.name;
+    if (name === name.toUpperCase()) {
+      next();
+    } else {
+      req.body.name = name.toUpperCase();
+      next();
+    }
+}
+
 // GET ALL USERS
 router.get('/', (req, res) => {
     db
@@ -17,7 +27,7 @@ router.get('/', (req, res) => {
 });
 
 // ADD A USER
-router.post('/', (req, res) => {
+router.post('/', drunkWithPower, (req, res) => {
     const userInfo = req.body;
     !userInfo.name
     ? res
@@ -49,6 +59,16 @@ router.get('/:id', (req, res) => {
     });
 });
 
+//GET A USERS POST BY ID ////////
+router.get('/:id/posts', async (req, res) => {
+    try {
+        const posts = await db.getUserPosts(req.params.id);
+        res.status(200).json(posts)
+    } catch (err) {
+        res.status(500).json({ error: "These posts could not be retrieved." })
+    }
+})
+
 // DELETE ACCOUNT
 router.delete('/:id', (req, res) => {
     const userID = req.params.id;
@@ -57,7 +77,7 @@ router.delete('/:id', (req, res) => {
         if(id.length === 0){
             res.status(404).json({ message: "A user with this ID does not exist." })
         } else {
-            res.status(204).json({ message: "This user was deleted successfully. Would you like to fill out a survey " })
+            res.status(200).json({ message: "This user was deleted successfully." })
         }
         
     })

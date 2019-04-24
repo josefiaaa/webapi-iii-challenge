@@ -19,13 +19,12 @@ router.get('/', (req, res) => {
 // ADD A POST
 router.post('/', (req, res) => {
     const postInfo = req.body;
-    const user_id = user.req.params.id;
 
     !postInfo.text || !postInfo.user_id
     ? res
         .status(400).json({ errorMessage: "Please provide contents for the post." })
     : db
-        .insert(user_id, postInfo)
+        .insert(postInfo)
         .then( post => {
             res.status(201).json(post);
     })
